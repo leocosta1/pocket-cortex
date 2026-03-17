@@ -19,6 +19,8 @@ export const GlobalStyles = createGlobalStyle`
     font-optical-sizing: auto;
 
     line-height: 1.5;
+
+    background-color: ${({ theme }) => theme.background.page};
   }
 
   img, svg {
@@ -38,6 +40,7 @@ export const GlobalStyles = createGlobalStyle`
 
   input, button, textarea, select {
     font: inherit;
+    accent-color: ${({ theme }) => theme.action.primary.main};
   }
 
   ul {
