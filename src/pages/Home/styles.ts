@@ -74,7 +74,7 @@ export const Info = styled.div`
   gap: 16px;
 `;
 
-export const Patch = styled.div`
+export const Preset = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
