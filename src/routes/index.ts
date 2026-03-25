@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router';
+import { createHashRouter } from 'react-router';
 
 import { AppLayout } from '../layouts/App';
 
@@ -7,7 +7,7 @@ import { SetlistPage } from '../pages/Setlist';
 import { ScenesPage } from '../pages/Scenes';
 import { MetronomePage } from '../pages/Metronome';
 
-export const routes = createBrowserRouter([
+export const routes = createHashRouter([
   {
     path: '/',
     Component: AppLayout,
