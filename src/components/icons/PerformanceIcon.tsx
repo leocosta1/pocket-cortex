@@ -1,6 +1,6 @@
 import type { SVGAttributes } from 'react';
 
-export function SetlistIcon(props: SVGAttributes<SVGElement>) {
+export function PerformanceIcon(props: SVGAttributes<SVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
