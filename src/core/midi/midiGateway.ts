@@ -5,7 +5,7 @@ class MIDIGateway {
   private onMessage?: (data: number[]) => void;
 
   async connect() {
-    if (this.midiInput || this.midiOutput) return true;
+    if (this.midiInput && this.midiOutput) return true;
 
     const midi = await navigator.requestMIDIAccess({ sysex: true });
 

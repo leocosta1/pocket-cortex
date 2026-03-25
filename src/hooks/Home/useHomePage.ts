@@ -1,5 +1,6 @@
 import { useAppConfig } from '../useAppConfig';
 import { usePedalState } from '../usePedalState';
+import type { ChangeEvent } from 'react';
 
 import { pedalController } from '../../core/pedal/pedalController';
 
@@ -24,7 +25,7 @@ export function useHomePage() {
     pedalController.disconnect();
   }
 
-  function setInitialBank(e: React.ChangeEvent<HTMLInputElement>) {
+  function setInitialBank(e: ChangeEvent<HTMLInputElement>) {
     const value = parseInt(e.currentTarget.value);
 
     if (isNaN(value) || value < 1 || value > 64) return;
@@ -32,7 +33,7 @@ export function useHomePage() {
     actions.setInitialBank(value);
   }
 
-  function setInitialPatch(e: React.ChangeEvent<HTMLInputElement>) {
+  function setInitialPatch(e: ChangeEvent<HTMLInputElement>) {
     const letter = e.currentTarget.value.toUpperCase();
 
     if (!/^[ABCD]$/.test(letter)) return;
@@ -42,15 +43,15 @@ export function useHomePage() {
     actions.setInitialPatch(patchIndex);
   }
 
-  function setGlobalTapTempo(e: React.ChangeEvent<HTMLInputElement>) {
+  function setGlobalTapTempo(e: ChangeEvent<HTMLInputElement>) {
     actions.setGlobalTapTempo(e.currentTarget.checked);
   }
 
-  function setCtrlDoubleClickable(e: React.ChangeEvent<HTMLInputElement>) {
+  function setCtrlDoubleClickable(e: ChangeEvent<HTMLInputElement>) {
     actions.setCtrlDoubleClickable(e.currentTarget.checked);
   }
 
-  function setCtrlDoubleClickMode(e: React.ChangeEvent<HTMLSelectElement>) {
+  function setCtrlDoubleClickMode(e: ChangeEvent<HTMLSelectElement>) {
     const value = e.currentTarget.value;
 
     if (value !== 'absolute' && value !== 'relative') return;
