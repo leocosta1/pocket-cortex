@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useHomePage } from '../../hooks/Home/useHomePage';
+
+import { mapIndexToPatchLetter } from '../../utils/patchLetters';
 
 import {
   Content,
@@ -9,14 +11,14 @@ import {
   Config,
   Display,
   Info,
-  Patch,
+  Preset,
   Divider,
   Tempo,
   Actions,
 } from './styles';
 
 import { ConnectionIcon } from '../../components/icons/ConnectionIcon';
-import { ResetIcon } from '../../components/icons/ResetIcon';
+import { DisconnectIcon } from '../../components/icons/DisconnectIcon';
 import { SaveIcon } from '../../components/icons/SaveIcon';
 
 import { Button } from '../../components/ui/Button';
@@ -25,13 +27,7 @@ import { ProtectedInput } from '../../components/ui/ProtectedInput';
 import { Select } from '../../components/ui/Select';
 
 export function HomePage() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [initialBank, setInitialBank] = useState(35);
-  const [initialSlot, setInitialSlot] = useState('A');
-  const [globalBPM] = useState(120);
-  const [isTapTempoGlobal, setIsTapTempoGlobal] = useState(true);
-  const [isCtrlDoubleClickable, setIsCtrlDoubleClickable] = useState(true);
-  const [ctrlMode, setCtrlMode] = useState<'absolute' | 'relative'>('absolute');
+  const { pedalState, appConfig, actions } = useHomePage();
 
   return (
     <Content>
@@ -41,21 +37,23 @@ export function HomePage() {
         <div>
           <p>
             <strong>Status: </strong>
-            <span>{isConnected ? '🟢 Conectado' : '⚫ Desconectado'}</span>
+            <span>
+              {pedalState.connected ? '🟢 Conectado' : '⚫ Desconectado'}
+            </span>
           </p>
 
           <p>
             <strong>Dispositivo: </strong>
-            <span>{isConnected ? 'GP-200' : ''}</span>
+            <span>{pedalState.connected ? 'GP-200' : ''}</span>
           </p>
         </div>
 
         <Button
-          variant={isConnected ? 'danger' : 'primary'}
-          onClick={() => setIsConnected((prev) => !prev)}
+          variant={pedalState.connected ? 'danger' : 'primary'}
+          onClick={pedalState.connected ? actions.disconnect : actions.connect}
         >
-          {isConnected ? <ResetIcon /> : <ConnectionIcon />}
-          <span>{isConnected ? 'Resetar' : 'Conectar'}</span>
+          {pedalState.connected ? <DisconnectIcon /> : <ConnectionIcon />}
+          <span>{pedalState.connected ? 'Desconectar' : 'Conectar'}</span>
         </Button>
       </Connect>
 
@@ -69,35 +67,20 @@ export function HomePage() {
         </header>
 
         <Config>
-          <strong>Patch Inicial:</strong>
+          <strong>Preset Inicial:</strong>
           <ProtectedInput
             type="number"
             min={1}
             max={64}
-            value={initialBank}
-            onChange={(e) => {
-              const min = Number(e.currentTarget.min);
-              const max = Number(e.currentTarget.max);
-              const value = Number(e.currentTarget.value);
-
-              if (value >= min && value <= max) {
-                setInitialBank(value);
-              }
-            }}
+            value={appConfig.initialBank}
+            onChange={actions.setInitialBank}
           />
           <ProtectedInput
             type="text"
             pattern="^[ABCD]$"
             maxLength={1}
-            value={initialSlot}
-            onChange={(e) => {
-              const pattern = e.currentTarget.pattern;
-              const value = e.currentTarget.value.toUpperCase();
-
-              if (new RegExp(pattern).test(value)) {
-                setInitialSlot(value);
-              }
-            }}
+            value={mapIndexToPatchLetter(appConfig.initialPatch)}
+            onChange={actions.setInitialPatch}
           />
         </Config>
 
@@ -105,8 +88,8 @@ export function HomePage() {
           <strong>Tap Tempo Global:</strong>
           <input
             type="checkbox"
-            checked={isTapTempoGlobal}
-            onChange={(e) => setIsTapTempoGlobal(e.currentTarget.checked)}
+            checked={appConfig.globalTapTempo}
+            onChange={actions.setGlobalTapTempo}
           />
         </Config>
 
@@ -114,20 +97,18 @@ export function HomePage() {
           <strong>Clique Duplo CTRL:</strong>
           <input
             type="checkbox"
-            checked={isCtrlDoubleClickable}
-            onChange={(e) => setIsCtrlDoubleClickable(e.currentTarget.checked)}
+            checked={appConfig.ctrlDoubleClickable}
+            onChange={actions.setCtrlDoubleClickable}
           />
 
           <Select
-            disabled={!isCtrlDoubleClickable}
+            disabled={!appConfig.ctrlDoubleClickable}
             options={[
               { value: 'absolute', label: 'Absoluto' },
               { value: 'relative', label: 'Relativo' },
             ]}
-            value={ctrlMode}
-            onChange={(e) =>
-              setCtrlMode(e.currentTarget.value as 'absolute' | 'relative')
-            }
+            value={appConfig.ctrlDoubleClickMode}
+            onChange={actions.setCtrlDoubleClickMode}
           />
         </Config>
       </Configs>
@@ -136,39 +117,42 @@ export function HomePage() {
 
       <Display>
         <Info>
-          <Patch>
-            <span>PATCH</span>
-            <strong>{`${initialBank}-${initialSlot}`}</strong>
-          </Patch>
+          <Preset>
+            <span>PRESET</span>
+            <strong>
+              {pedalState.bank ?? '-'}-
+              {pedalState.patch ? mapIndexToPatchLetter(pedalState.patch) : '-'}
+            </strong>
+          </Preset>
 
           <Divider />
 
-          <Tempo>
-            <strong>{globalBPM}</strong>
+          <Tempo onClick={actions.tapTempo}>
+            <strong>{pedalState.bpm ?? '---'}</strong>
             <span>BPM</span>
           </Tempo>
         </Info>
 
         <Actions>
-          <Button>BANK-</Button>
-          <Button>BANK+</Button>
-          <Button>PATCH-</Button>
-          <Button>PATCH+</Button>
+          <Button onClick={actions.bankMinus}>BANK-</Button>
+          <Button onClick={actions.bankPlus}>BANK+</Button>
+          <Button onClick={actions.patchMinus}>PATCH-</Button>
+          <Button onClick={actions.patchPlus}>PATCH+</Button>
 
-          <Button>A</Button>
-          <Button>B</Button>
-          <Button>C</Button>
-          <Button>D</Button>
+          <Button onClick={() => actions.selectPatch('A')}>A</Button>
+          <Button onClick={() => actions.selectPatch('B')}>B</Button>
+          <Button onClick={() => actions.selectPatch('C')}>C</Button>
+          <Button onClick={() => actions.selectPatch('D')}>D</Button>
 
-          <Button>CTRL 1</Button>
-          <Button>CTRL 2</Button>
-          <Button>CTRL 3</Button>
-          <Button>CTRL 4</Button>
+          <Button onClick={() => actions.ctrl(1)}>CTRL 1</Button>
+          <Button onClick={() => actions.ctrl(2)}>CTRL 2</Button>
+          <Button onClick={() => actions.ctrl(3)}>CTRL 3</Button>
+          <Button onClick={() => actions.ctrl(4)}>CTRL 4</Button>
 
-          <Button>CTRL 5</Button>
-          <Button>CTRL 6</Button>
-          <Button>CTRL 7</Button>
-          <Button>CTRL 8</Button>
+          <Button onClick={() => actions.ctrl(5)}>CTRL 5</Button>
+          <Button onClick={() => actions.ctrl(6)}>CTRL 6</Button>
+          <Button onClick={() => actions.ctrl(7)}>CTRL 7</Button>
+          <Button onClick={() => actions.ctrl(8)}>CTRL 8</Button>
         </Actions>
       </Display>
     </Content>
