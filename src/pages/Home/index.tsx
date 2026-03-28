@@ -63,7 +63,11 @@ export function HomePage() {
         <header>
           <h2>Configurações</h2>
 
-          <IconButton icon={<SaveIcon />} onClick={actions.saveConfig} />
+          <IconButton
+            icon={<SaveIcon />}
+            title="Salvar configurações"
+            onClick={actions.saveConfig}
+          />
         </header>
 
         <Config>
