@@ -1,7 +1,8 @@
 import { globalTapTempo } from '../features/globalTapTempo';
 import { ctrlDoubleClick } from '../features/ctrlDoubleClick';
+import { performanceMode } from '../features/performanceMode';
 
-const appFeatures = [globalTapTempo, ctrlDoubleClick];
+const appFeatures = [globalTapTempo, ctrlDoubleClick, performanceMode];
 
 let initialized = false;
 
