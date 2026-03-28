@@ -10,16 +10,19 @@ type PedalState = {
 type Listener = (state: PedalState) => void;
 
 class PedalStore {
-  private state: PedalState = {
-    connected: false,
-    bank: null,
-    patch: null,
-    bpm: null,
-  };
-
-  private listeners: Listener[] = [];
+  private state: PedalState;
+  private listeners: Listener[];
 
   constructor() {
+    this.state = {
+      connected: false,
+      bank: null,
+      patch: null,
+      bpm: null,
+    };
+
+    this.listeners = [];
+
     this.bindEvents();
   }
 
