@@ -1,26 +1,26 @@
+import { appModeStore } from '../app/appModeStore';
 import { appConfigStore } from '../app/appConfigStore';
 
 import { pedalEvents } from '../pedal/pedalEvents';
 import { pedalStore } from '../pedal/pedalStore';
 import { pedalController } from '../pedal/pedalController';
 
-const DOUBLE_CLICK_THRESHOLD = 300;
+import { createDoubleClickDetector } from '../../utils/doubleClickDetector';
 
 export function ctrlDoubleClick() {
-  const lastClick: Record<number, number> = {};
+  const doubleClickDetector = createDoubleClickDetector();
 
   pedalEvents.on('ctrlSwitch', ({ ctrl }) => {
+    const mode = appModeStore.getMode();
+
+    if (mode !== 'normal') return;
+
     const { ctrlDoubleClickable, ctrlDoubleClickMode } =
       appConfigStore.getConfig();
 
     if (!ctrlDoubleClickable) return;
 
-    const now = Date.now();
-    const last = lastClick[ctrl];
-
-    if (last && now - last < DOUBLE_CLICK_THRESHOLD) {
-      lastClick[ctrl] = 0;
-
+    if (doubleClickDetector(ctrl)) {
       const { initialBank } = appConfigStore.getConfig();
       const { bank } = pedalStore.getState();
 
@@ -30,10 +30,6 @@ export function ctrlDoubleClick() {
         ctrlDoubleClickMode === 'absolute' ? initialBank : bank;
 
       pedalController.selectPreset(targetBank, ctrl);
-
-      return;
     }
-
-    lastClick[ctrl] = now;
   });
 }

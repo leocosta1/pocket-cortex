@@ -9,7 +9,7 @@ import { GlobalStyles } from './styles/GlobalStyles';
 import { RouterProvider } from 'react-router';
 import { routes } from './routes';
 
-import { initAppFeatures } from './core/app/appFeaturesInit';
+import { initAppFeatures } from './core/app/appFeatures';
 
 function App() {
   const theme = usePreferredTheme();
