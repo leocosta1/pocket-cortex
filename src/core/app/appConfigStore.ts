@@ -12,20 +12,11 @@ const STORAGE_KEY = 'pocket-cortex:configs';
 
 class AppConfigStore {
   private config: AppConfig;
-  private listeners: Listener[] = [];
-
-  private defaultConfig(): AppConfig {
-    return {
-      initialBank: 1,
-      initialPatch: 1,
-      globalTapTempo: true,
-      ctrlDoubleClickable: true,
-      ctrlDoubleClickMode: 'relative',
-    };
-  }
+  private listeners: Listener[];
 
   constructor() {
     this.config = this.loadConfig();
+    this.listeners = [];
   }
 
   private loadConfig(): AppConfig {
@@ -40,20 +31,28 @@ class AppConfigStore {
     }
   }
 
-  getConfig() {
-    return this.config;
-  }
-
-  private saveConfig() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.config));
+  private defaultConfig(): AppConfig {
+    return {
+      initialBank: 1,
+      initialPatch: 1,
+      globalTapTempo: true,
+      ctrlDoubleClickable: true,
+      ctrlDoubleClickMode: 'relative',
+    };
   }
 
   private setConfig(newConfig: Partial<AppConfig>) {
     this.config = { ...this.config, ...newConfig };
 
-    this.saveConfig();
-
     this.listeners.forEach((listener) => listener(this.config));
+  }
+
+  getConfig() {
+    return this.config;
+  }
+
+  saveConfig() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.config));
   }
 
   setInitialBank(bank: AppConfig['initialBank']) {
