@@ -11,6 +11,8 @@ export function usePerformancePage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [songToEdit, setSongToEdit] = useState<Song | null>(null);
 
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
   function play(song: Song) {
     if (!pedalState.connected) {
       alert(
@@ -24,9 +26,11 @@ export function usePerformancePage() {
     }
 
     performanceActions.play(song);
+    panelActions.openPanel();
   }
 
   function stop() {
+    panelActions.closePanel();
     performanceActions.stop();
   }
 
@@ -46,20 +50,13 @@ export function usePerformancePage() {
   }
 
   function updateSong(song: Song) {
-    if (performanceState.currentSong?.id === song.id) {
-      alert(
-        'Não é possível atualizar uma música que está sendo tocada. Pare a performance primeiro.'
-      );
-      return;
-    }
-
     songActions.updateSong(song);
   }
 
   function deleteSong(id: string) {
-    if (performanceState.currentSong?.id === id) {
+    if (performanceState.playing) {
       alert(
-        'Não é possível deletar uma música que está sendo tocada. Pare a performance primeiro.'
+        'Não é possível deletar enquanto há uma música sendo tocada. Pare a performance primeiro.'
       );
       return;
     }
@@ -70,6 +67,13 @@ export function usePerformancePage() {
   }
 
   function exportSongs() {
+    if (performanceState.playing) {
+      alert(
+        'Não é possível exportar enquanto há uma música sendo tocada. Pare a performance primeiro.'
+      );
+      return;
+    }
+
     songActions.exportSongs();
   }
 
@@ -90,11 +94,24 @@ export function usePerformancePage() {
 
   const editorActions = {
     openEditorToAdd() {
+      if (performanceState.playing) {
+        alert(
+          'Não é possível adicionar enquanto há uma música sendo tocada. Pare a performance primeiro.'
+        );
+        return;
+      }
       setSongToEdit(null);
       setIsEditorOpen(true);
     },
 
     openEditorToEdit(song: Song) {
+      if (performanceState.playing) {
+        alert(
+          'Não é possível atualizar enquanto há uma música sendo tocada. Pare a performance primeiro.'
+        );
+        return;
+      }
+
       setSongToEdit(song);
       setIsEditorOpen(true);
     },
@@ -116,6 +133,20 @@ export function usePerformancePage() {
     },
   };
 
+  const panelActions = {
+    openPanel() {
+      setIsPanelOpen(true);
+    },
+
+    closePanel() {
+      setIsPanelOpen(false);
+    },
+
+    selectSection(index: number) {
+      performanceActions.setSection(index);
+    },
+  };
+
   return {
     songs,
     performanceState,
@@ -123,6 +154,10 @@ export function usePerformancePage() {
       isEditorOpen,
       songToEdit,
       actions: editorActions,
+    },
+    panel: {
+      isPanelOpen,
+      actions: panelActions,
     },
     actions: {
       play,

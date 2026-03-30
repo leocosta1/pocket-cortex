@@ -22,9 +22,11 @@ import { DeleteIcon } from '../../components/icons/DeleteIcon';
 import { ExportIcon } from '../../components/icons/ExportIcon';
 import { ImportIcon } from '../../components/icons/ImportIcon';
 import { SongEditor } from '../../components/ui/SongEditor';
+import { StagePanel } from '../../components/ui/StagePanel';
 
 export function PerformancePage() {
-  const { performanceState, songs, editor, actions } = usePerformancePage();
+  const { performanceState, songs, actions, editor, panel } =
+    usePerformancePage();
 
   const { playing, currentSong, currentSectionIndex } = performanceState;
 
@@ -44,7 +46,7 @@ export function PerformancePage() {
         </p>
 
         <p>
-          <strong>Seção atual: </strong>
+          <strong>Seção: </strong>
           <span>
             {currentSong
               ? (currentSong.sections[currentSectionIndex]?.name ?? '---')
@@ -120,6 +122,13 @@ export function PerformancePage() {
         initial={editor.songToEdit || undefined}
         onSubmit={editor.actions.handleEditorSubmit}
         onClose={editor.actions.handleEditorClose}
+      />
+
+      <StagePanel
+        open={panel.isPanelOpen}
+        song={currentSong}
+        sectionIndex={currentSectionIndex}
+        onChangeSection={(index) => panel.actions.selectSection(index)}
       />
     </Content>
   );
