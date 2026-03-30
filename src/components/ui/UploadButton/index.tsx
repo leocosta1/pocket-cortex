@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import { IconButton } from '../IconButton';
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode, ChangeEvent } from 'react';
 
 interface UploadButtonProps extends InputHTMLAttributes<HTMLInputElement> {
-  icon: React.ReactNode;
+  icon: ReactNode;
   onFileSelect: (file: File) => void;
 }
 
@@ -18,7 +18,7 @@ export function UploadButton({
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
