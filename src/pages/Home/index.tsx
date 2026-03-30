@@ -5,7 +5,7 @@ import { mapIndexToPatchLetter } from '../../utils/patchLetters';
 import {
   Content,
   Title,
-  Connect,
+  Status,
   Separator,
   Configs,
   Config,
@@ -33,7 +33,7 @@ export function HomePage() {
     <Content>
       <Title>Pocket Cortex</Title>
 
-      <Connect>
+      <Status>
         <div>
           <p>
             <strong>Status: </strong>
@@ -55,7 +55,7 @@ export function HomePage() {
           {pedalState.connected ? <DisconnectIcon /> : <ConnectionIcon />}
           <span>{pedalState.connected ? 'Desconectar' : 'Conectar'}</span>
         </Button>
-      </Connect>
+      </Status>
 
       <Separator />
 
@@ -63,7 +63,11 @@ export function HomePage() {
         <header>
           <h2>Configurações</h2>
 
-          <IconButton icon={<SaveIcon />} />
+          <IconButton
+            icon={<SaveIcon />}
+            title="Salvar configurações"
+            onClick={actions.saveConfig}
+          />
         </header>
 
         <Config>

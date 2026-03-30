@@ -19,7 +19,7 @@ export const StyledButton = styled.button`
 
   &:hover:not(:disabled),
   &:focus-visible {
-    background-color: ${({ theme }) => theme.background.surface};
+    background-color: ${({ theme }) => theme.text.primary}1A;
   }
 
   &:disabled {

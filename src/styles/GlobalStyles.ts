@@ -43,6 +43,14 @@ export const GlobalStyles = createGlobalStyle`
     accent-color: ${({ theme }) => theme.action.primary.main};
   }
 
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  input[type=number] {
+    appearance: none;
+  }
+
   ul {
     padding-left: 32px;
   }

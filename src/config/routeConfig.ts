@@ -1,7 +1,7 @@
 import type { ElementType } from 'react';
 
 import { HomeIcon } from '../components/icons/HomeIcon';
-import { SetlistIcon } from '../components/icons/SetlistIcon';
+import { PerformanceIcon } from '../components/icons/PerformanceIcon';
 import { ScenesIcon } from '../components/icons/ScenesIcon';
 import { MetronomeIcon } from '../components/icons/MetronomeIcon';
 
@@ -18,9 +18,9 @@ const routeConfigs: Route[] = [
     icon: HomeIcon,
   },
   {
-    label: 'Setlist',
-    path: 'setlist',
-    icon: SetlistIcon,
+    label: 'Performance',
+    path: 'performance',
+    icon: PerformanceIcon,
   },
   {
     label: 'Cenas',

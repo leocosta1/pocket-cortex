@@ -1,28 +1,35 @@
-import { useAppConfig } from '../useAppConfig';
-import { usePedalState } from '../usePedalState';
-import type { ChangeEvent } from 'react';
-
-import { pedalController } from '../../core/pedal/pedalController';
+import { useApp } from '../useApp';
+import { usePedal } from '../usePedal';
 
 import { mapPatchLetterToIndex } from '../../utils/patchLetters';
+import { wakeLockHandler } from '../../utils/wakeLock';
+
+import type { ChangeEvent } from 'react';
 
 const DEFAULT_TEMPO = 120;
 
 export function useHomePage() {
-  const { config, actions } = useAppConfig();
-  const pedalState = usePedalState();
+  const { appConfig, appActions } = useApp();
+  const { pedalState, pedalActions } = usePedal();
 
   async function connect() {
-    const connected = await pedalController.connect();
+    const connected = await pedalActions.connect();
 
     if (!connected) return;
 
-    pedalController.selectPreset(config.initialBank, config.initialPatch);
-    pedalController.setTempo(DEFAULT_TEMPO);
+    await wakeLockHandler.request();
+
+    pedalActions.selectPreset(appConfig.initialBank, appConfig.initialPatch);
+    pedalActions.setTempo(DEFAULT_TEMPO);
   }
 
-  function disconnect() {
-    pedalController.disconnect();
+  async function disconnect() {
+    pedalActions.disconnect();
+    await wakeLockHandler.release();
+  }
+
+  function saveConfig() {
+    appActions.saveConfig();
   }
 
   function setInitialBank(e: ChangeEvent<HTMLInputElement>) {
@@ -30,7 +37,7 @@ export function useHomePage() {
 
     if (isNaN(value) || value < 1 || value > 64) return;
 
-    actions.setInitialBank(value);
+    appActions.setInitialBank(value);
   }
 
   function setInitialPatch(e: ChangeEvent<HTMLInputElement>) {
@@ -40,15 +47,15 @@ export function useHomePage() {
 
     const patchIndex = mapPatchLetterToIndex(letter);
 
-    actions.setInitialPatch(patchIndex);
+    appActions.setInitialPatch(patchIndex);
   }
 
   function setGlobalTapTempo(e: ChangeEvent<HTMLInputElement>) {
-    actions.setGlobalTapTempo(e.currentTarget.checked);
+    appActions.setGlobalTapTempo(e.currentTarget.checked);
   }
 
   function setCtrlDoubleClickable(e: ChangeEvent<HTMLInputElement>) {
-    actions.setCtrlDoubleClickable(e.currentTarget.checked);
+    appActions.setCtrlDoubleClickable(e.currentTarget.checked);
   }
 
   function setCtrlDoubleClickMode(e: ChangeEvent<HTMLSelectElement>) {
@@ -56,27 +63,27 @@ export function useHomePage() {
 
     if (value !== 'absolute' && value !== 'relative') return;
 
-    actions.setCtrlDoubleClickMode(value);
+    appActions.setCtrlDoubleClickMode(value);
   }
 
   function tapTempo() {
-    pedalController.tapTempo();
+    pedalActions.tapTempo();
   }
 
   function bankMinus() {
-    pedalController.bankMinus();
+    pedalActions.bankMinus();
   }
 
   function bankPlus() {
-    pedalController.bankPlus();
+    pedalActions.bankPlus();
   }
 
   function patchMinus() {
-    pedalController.patchMinus();
+    pedalActions.patchMinus();
   }
 
   function patchPlus() {
-    pedalController.patchPlus();
+    pedalActions.patchPlus();
   }
 
   function selectPatch(letter: 'A' | 'B' | 'C' | 'D') {
@@ -84,19 +91,20 @@ export function useHomePage() {
 
     if (!pedalState.bank) return;
 
-    pedalController.selectPreset(pedalState.bank, patchIndex);
+    pedalActions.selectPreset(pedalState.bank, patchIndex);
   }
 
   function ctrl(ctrl: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8) {
-    pedalController.ctrl(ctrl);
+    pedalActions.ctrl(ctrl);
   }
 
   return {
     pedalState,
-    appConfig: config,
+    appConfig,
     actions: {
       connect,
       disconnect,
+      saveConfig,
       setInitialBank,
       setInitialPatch,
       setGlobalTapTempo,

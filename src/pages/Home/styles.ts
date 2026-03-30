@@ -12,7 +12,7 @@ export const Title = styled.h1`
   color: ${({ theme }) => theme.text.primary};
 `;
 
-export const Connect = styled.section`
+export const Status = styled.section`
   display: flex;
   align-items: center;
   justify-content: space-between;

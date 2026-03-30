@@ -46,4 +46,8 @@ export const light = {
       indicator: palette.black[400],
     },
   },
+  status: {
+    active: palette.green[400],
+    inactive: palette.red[400],
+  },
 } as const;
