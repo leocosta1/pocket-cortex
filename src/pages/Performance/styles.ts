@@ -22,20 +22,6 @@ export const Status = styled.section`
   color: ${({ theme }) => theme.text.primary};
 `;
 
-export const Sections = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-
-  font-weight: 400;
-  color: ${({ theme }) => theme.text.secondary};
-
-  & .current {
-    font-weight: 700;
-    color: ${({ theme }) => theme.text.primary};
-  }
-`;
-
 export const Separator = styled.div`
   width: 100%;
   height: 1px;
@@ -45,7 +31,7 @@ export const Separator = styled.div`
   margin: 16px 0;
 `;
 
-export const Songs = styled.section`
+export const SongsList = styled.section`
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -69,11 +55,14 @@ export const Songs = styled.section`
   }
 `;
 
-export const Song = styled.div`
-  background-color: ${({ theme }) => theme.background.surface};
+export const SongItem = styled.div<{ $isPlaying: boolean }>`
+  background-color: ${({ theme, $isPlaying }) =>
+    $isPlaying ? theme.background.accent : theme.background.surface};
   padding: 12px 16px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+
+  transition: all 0.25s ease-in-out;
 
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -102,4 +91,10 @@ export const Info = styled.div`
     font-weight: 300;
     color: ${({ theme }) => theme.text.secondary};
   }
+`;
+
+export const Actions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;

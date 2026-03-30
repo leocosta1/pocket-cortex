@@ -2,11 +2,14 @@ export type Song = {
   id: string;
   name: string;
   bpm: number;
-  sections: {
-    name: string;
-    bank: number;
-    patch: number;
-  }[];
+  sections: Section[];
+};
+
+export type Section = {
+  id: string;
+  name: string;
+  bank: number;
+  patch: number;
 };
 
 type Listener = (songs: Song[]) => void;

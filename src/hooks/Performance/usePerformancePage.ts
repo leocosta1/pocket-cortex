@@ -1,11 +1,24 @@
+import { useState } from 'react';
+import { usePedal } from '../usePedal';
 import { usePerformance } from '../usePerformance';
 import type { Song } from '../../core/performance/songStore';
 
 export function usePerformancePage() {
+  const { pedalState } = usePedal();
   const { performanceState, performanceActions, songs, songActions } =
     usePerformance();
 
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [songToEdit, setSongToEdit] = useState<Song | null>(null);
+
   function play(song: Song) {
+    if (!pedalState.connected) {
+      alert(
+        'Pedal não conectado. Conecte o pedal para ativar o modo performance.'
+      );
+      return;
+    }
+
     if (performanceState.playing) {
       performanceActions.stop();
     }
@@ -17,7 +30,13 @@ export function usePerformancePage() {
     performanceActions.stop();
   }
 
-  function createSong(song: Omit<Song, 'id'>) {
+  function isPlayingCurrentSong(song: Song) {
+    return (
+      performanceState.playing && performanceState.currentSong?.id === song.id
+    );
+  }
+
+  function addSong(song: Omit<Song, 'id'>) {
     const newSong: Song = {
       ...song,
       id: crypto.randomUUID(),
@@ -45,7 +64,9 @@ export function usePerformancePage() {
       return;
     }
 
-    songActions.deleteSong(id);
+    if (confirm('Tem certeza que deseja deletar essa música?')) {
+      songActions.deleteSong(id);
+    }
   }
 
   function exportSongs() {
@@ -67,13 +88,47 @@ export function usePerformancePage() {
     }
   }
 
+  const editorActions = {
+    openEditorToAdd() {
+      setSongToEdit(null);
+      setIsEditorOpen(true);
+    },
+
+    openEditorToEdit(song: Song) {
+      setSongToEdit(song);
+      setIsEditorOpen(true);
+    },
+
+    handleEditorSubmit(song: Omit<Song, 'id'>) {
+      if (songToEdit) {
+        updateSong({ ...song, id: songToEdit.id });
+      } else {
+        addSong(song);
+      }
+
+      setIsEditorOpen(false);
+      setSongToEdit(null);
+    },
+
+    handleEditorClose() {
+      setIsEditorOpen(false);
+      setSongToEdit(null);
+    },
+  };
+
   return {
     songs,
     performanceState,
+    editor: {
+      isEditorOpen,
+      songToEdit,
+      actions: editorActions,
+    },
     actions: {
       play,
       stop,
-      createSong,
+      isPlayingCurrentSong,
+      addSong,
       updateSong,
       deleteSong,
       exportSongs,
