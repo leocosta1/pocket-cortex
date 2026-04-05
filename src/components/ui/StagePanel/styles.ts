@@ -5,7 +5,8 @@ export const Container = styled.div<{
   $dragging: boolean;
 }>`
   width: 100%;
-  padding: 24px 32px;
+  max-width: 768px;
+  padding: 16px 32px 24px;
   background-color: ${({ theme }) => theme.background.surface};
 
   border-radius: 32px 32px 0 0;
@@ -13,29 +14,43 @@ export const Container = styled.div<{
 
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 50%;
   z-index: 1;
 
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 
-  transform: translateY(${({ $translate }) => $translate});
+  transform: translate(-50%, ${({ $translate }) => $translate});
 
   transition: ${({ $dragging }) =>
     $dragging ? 'none' : 'transform 0.25s ease-in-out'};
 
   will-change: transform;
   touch-action: none;
+  user-select: none;
 `;
 
 export const Swipe = styled.div`
-  width: 50%;
-  height: 3px;
-  background-color: ${({ theme }) => theme.border.secondary};
-  border-radius: 3px;
+  width: 100%;
+  padding: 8px 0;
 
+  position: relative;
   align-self: center;
+  cursor: grab;
+
+  &::after {
+    content: '';
+    width: 50%;
+    height: 3px;
+    background-color: ${({ theme }) => theme.border.secondary};
+    border-radius: 3px;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 `;
 
 export const Sections = styled.div`
